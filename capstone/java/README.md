@@ -1,56 +1,54 @@
-# Final Capstone Java Project Starter
+# Liga Columbus - Java + React Starter
 
 ## Database
 
-Inside the `<project-root>/database/` directory, you'll find an executable Bash script (`.sh` file) and several SQL scripts (`.sql` files). These can be used to build and rebuild a PostgreSQL database for the capstone project.
+Inside the `<project-root>/database/` directory, you'll find an executable Bash script (`.sh` file) and several SQL scripts (`.sql` files). These are used to build and rebuild the PostgreSQL database for the Liga Columbus application.
 
-From a terminal session, execute the following commands:
+From a terminal session, run:
 
 ```
 cd <project-root>/database/
 ./create.sh
 ```
 
-This Bash script drops the existing database, if necessary, creates a new database named `final_capstone`, and runs the various SQL scripts in the correct order. You don't need to modify the Bash script unless you want to change the database name.
+This Bash script drops the existing database if necessary, creates a new database named `liga_columbus`, and runs the SQL scripts in the correct order. You don't need to modify the Bash script unless changing the database name.
 
-Each SQL script has a specific purpose as described here:
+Each SQL script serves a specific purpose:
 
-| File Name | Description |
-| --------- | ----------- |
-| `data.sql` | This script populates the database with any static setup data or test/demo data. The project team should modify this script.<br />Note the default application users created in this script. |
-| `dropdb.sql` | This script destroys the database so that it can be recreated. It drops the database and associated users. The project team shouldn't have to modify this script. |
-| `schema.sql` | This script creates all of the database objects, such as tables and sequences. The project team should modify this script. |
-| `user.sql` | This script creates the database application users and grants them the appropriate privileges. The project team shouldn't have to modify this script. <br /> See the next section for more information on these users. |
+| File Name    | Description                                                                                                       |
+| ------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `data.sql`   | Populates the database with static setup data or test/demo data. Modify this file for your project-specific data. |
+| `dropdb.sql` | Destroys the database and users so it can be recreated. Usually no need to change this.                           |
+| `schema.sql` | Creates all database objects such as tables and sequences. Modify to match your application schema.               |
+| `user.sql`   | Creates application users and grants privileges. Usually no need to change this.                                  |
 
-### Database users
+### Database Users
 
-The database superuser—meaning `postgres`—must only be used for database administration. It must not be used by applications. As such, two database users are created for the capstone application to use as described here:
+Use the `postgres` superuser only for admin tasks. Two users are created for application use:
 
-| Username | Description |
-| -------- | ----------- |
-| `final_capstone_owner` | This user is the schema owner. It has full access—meaning granted all privileges—to all database objects within the `capstone` schema and also has privileges to create new schema objects. This user can be used to connect to the database from PGAdmin for administrative purposes. |
-| `final_capstone_appuser` | The application uses this user to make connections to the database. This user is granted `SELECT`, `INSERT`, `UPDATE`, and `DELETE` privileges for all database tables and can `SELECT` from all sequences. The application datasource has been configured to connect using this user. |
+| Username       | Description                                                                                                |
+| -------------- | ---------------------------------------------------------------------------------------------------------- |
+| `liga_owner`   | Schema owner. Has full privileges and can be used with PGAdmin for admin tasks.                            |
+| `liga_appuser` | Used by the application to connect to the database. Has `SELECT`, `INSERT`, `UPDATE`, and `DELETE` access. |
 
+## Spring Boot Backend
 
-## Spring Boot
+Note: Spring Boot runs on port `9000` by default in this project.
 
-Note: Spring Boot has been configured to run on port `9000` for this project instead of the default `8080`.
+### Datasource Configuration
 
-### Datasource
-
-A Datasource has been configured for you in `src/resources/application.properties`. It connects to the database using the `capstone_appuser` database user. You can change the name of this database if you want, but remember to change it here and in the `create.sh` script in the database folder:
+Datasource settings are in `src/main/resources/application.properties`. Update them if your database name or credentials differ:
 
 ```
-# datasource connection properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/final_capstone
-spring.datasource.name=final_capstone
-spring.datasource.username=final_capstone_appuser
-spring.datasource.password=finalcapstone
+spring.datasource.url=jdbc:postgresql://localhost:5432/liga_columbus
+spring.datasource.name=liga_columbus
+spring.datasource.username=liga_appuser
+spring.datasource.password=ligapassword
 ```
 
-### JdbcTemplate
+### JdbcTemplate Example
 
-If you look in `src/main/java/com/techelevator/dao`, you'll see `JdbcUserDao`. This is an example of how to get an instance of `JdbcTemplate` in your DAOs. If you declare a field of type `JdbcTemplate` and add it as an argument to the constructor, Spring automatically injects an instance for you:
+DAO classes use `JdbcTemplate`. Example from `JdbcUserDao`:
 
 ```java
 @Service
@@ -64,9 +62,9 @@ public class JdbcUserDao implements UserDao {
 }
 ```
 
-### CORS
+### CORS Setup
 
-Any controller that'll be accessed from a client like the React Starter application needs the `@CrossOrigin` annotation. This tells the browser that you're allowing the client application to access this resource:
+Controllers accessed from the React frontend must use `@CrossOrigin` to allow cross-origin requests:
 
 ```java
 @RestController
@@ -78,28 +76,26 @@ public class AuthenticationController {
 
 ## Security
 
-Most of the functionality related to Security is located in the `src/main/java/com/techelevator/security` package. You shouldn't have to modify anything here, but feel free to go through the code if you want to see how things work.
+Most security configuration is in `src/main/java/com/liga/security`. You shouldn't need to modify this, but it's available if needed.
 
 ## Controllers
 
-There are two controllers in the `com.techelevator.controller` package for authentication and retrieving users.
+Found in `com.liga.controller`. Two are pre-configured:
 
-### Authentication controller
+### AuthenticationController.java
 
-`AuthenticationController.java` handles the `/login` and `/register` routes and works with the React starter as is. If you need to modify the user registration form, start here.
+Handles `/login` and `/register`. Uses `JdbcUserDao` to access user data. Works out-of-the-box with the React frontend.
 
-The authentication controller uses the `JdbcUserDao` to read and write data from the users table.
+### UserController.java
 
-### User controller
-
-`UserController.java` has two endpoints `/users` and `/users/{id}` to retrieve all users or one specific user. The React starter uses the latter endpoint to validate the user token when the user returns to the application after previously has logged in.
+Provides `/users` and `/users/{id}` to retrieve user data. React uses this to validate stored login tokens.
 
 ## Testing
 
-### DAO integration tests
+### DAO Integration Tests
 
-`com.techelevator.dao.BaseDaoTest` has been provided for you to use as a base class for any DAO integration test. It initializes a Datasource for testing and manages rollback of database changes between tests.
+Use `com.liga.dao.BaseDaoTest` as the base class for integration tests. This sets up a datasource and handles transaction rollback.
 
-`com.techelevator.dao.JdbUserDaoTest` has been provided for you as an example for writing your own DAO integration tests.
+An example test class `JdbcUserDaoTest` is provided.
 
-Remember that when testing, you're using a copy of the real database. The schema for the test database is defined in the same schema script for the real database, `database/schema.sql`. The data for the test database is defined separately within `src/test/resources/test-data.sql`.
+For testing, the schema is shared with the main application (`database/schema.sql`), but the test data is defined in `src/test/resources/test-data.sql`.

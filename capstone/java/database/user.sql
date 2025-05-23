@@ -2,24 +2,24 @@
 -- This script creates the database users and grants them the necessary permissions
 -- ********************************************************************************
 
-CREATE USER final_capstone_owner
-WITH PASSWORD 'finalcapstone';
+CREATE USER liga_owner
+WITH PASSWORD 'ligapassword';
 
 GRANT ALL
 ON ALL TABLES IN SCHEMA public
-TO final_capstone_owner;
+TO liga_owner;
 
 GRANT ALL
 ON ALL SEQUENCES IN SCHEMA public
-TO final_capstone_owner;
+TO liga_owner;
 
-CREATE USER final_capstone_appuser
-WITH PASSWORD 'finalcapstone';
+CREATE USER liga_appuser
+WITH PASSWORD 'ligapassword';
 
 GRANT SELECT, INSERT, UPDATE, DELETE
 ON ALL TABLES IN SCHEMA public
-TO final_capstone_appuser;
+TO liga_appuser;
 
 GRANT USAGE, SELECT
 ON ALL SEQUENCES IN SCHEMA public
-TO final_capstone_appuser;
+TO liga_appuser;

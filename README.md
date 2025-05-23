@@ -1,9 +1,7 @@
-# Final Capstone
-​
-This directory contains all of the starter projects for the final capstone.
-​
-Each project contains instructions that provides information about the starting code and explains how to get started with the final capstone project.
+# Liga Columbus
 
-**NOTE - in Java, the pom.xml uses an environment variable (env.CURRICULUM_JAVA_VERSION).  Replace that with your Java version.**
+This directory contains all of the code and documentation for the **Liga Columbus** tournament platform.
 
-This version uses Java 21 and React.
+The project includes instructions for getting started with both the Java + Spring Boot backend and the React frontend. It has been designed to manage soccer tournaments for various age groups and seasons, with features for user registration, admin tools, and a clean UI experience.
+
+Use this as your single source of truth for setting up, running, and expanding the Liga Columbus web application.
