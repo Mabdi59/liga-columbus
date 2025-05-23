@@ -1,16 +1,33 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import axios from 'axios';
+
 import { UserContext } from './context/UserContext';
 import AuthService from './services/AuthService';
+
+// Public Views
 import HomeView from './views/HomeView/HomeView';
 import LoginView from './views/LoginView/LoginView';
 import LogoutView from './views/LogoutView';
 import RegisterView from './views/RegisterView/RegisterView';
 import UserProfileView from './views/UserProfileView/UserProfileView';
+import TeamView from './views/TeamView/TeamView';
+import PlayerView from './views/PlayerView/PlayerView';
+import TournamentView from './views/TournamentView/TournamentView';
+import MatchView from './views/MatchView/MatchView';
+import ScheduleView from './views/ScheduleView/ScheduleView';
+import StandingsView from './views/StandingsView/StandingsView';
+
+// Admin Views
+import AdminDashboardView from './views/AdminDashboardView/AdminDashboardView';
+import AdminTeamsView from './views/AdminTeamsView/AdminTeamsView';
+import AdminPlayersView from './views/AdminPlayersView/AdminPlayersView';
+import AdminTournamentsView from './views/AdminTournamentsView/AdminTournamentsView';
+import AdminMatchesView from './views/AdminMatchesView/AdminMatchesView';
+
+// Shared Components
 import MainNav from './components/MainNav/MainNav';
 import ProtectedRoute from './components/ProtectedRoute';
-
-import axios from 'axios';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -20,36 +37,21 @@ export default function App() {
   }
 
   function handleLogout() {
-    // Remove auth data from local storage
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-
-    // Clear auth token from axios
     delete axios.defaults.headers.common['Authorization'];
-
-    // Clear the auth context
     setUser(null);
   }
 
-  // When a user comes back to the app or refreshes the page, check for user/token in local storage and validate it
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     const token = localStorage.getItem('token');
 
     if (user && token) {
-      // Set the token in the axios default headers
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-      // Make API request to ensure token is still valid
       AuthService.getUserProfile(user.id)
-        .then((response) => {
-          // Token is still valid, act like user just logged in
-          handleLogin(response.data);
-        })
-        .catch(() => {
-          // Token is not valid, act lke user just logged out
-          handleLogout();
-        });
+        .then((response) => handleLogin(response.data))
+        .catch(() => handleLogout());
     }
   }, []);
 
@@ -60,18 +62,25 @@ export default function App() {
           <MainNav />
           <main id="main-content">
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<HomeView />} />
               <Route path="/login" element={<LoginView onLogin={handleLogin} />} />
               <Route path="/logout" element={<LogoutView onLogout={handleLogout} />} />
               <Route path="/register" element={<RegisterView />} />
-              <Route
-                path="/userProfile"
-                element={
-                  <ProtectedRoute>
-                    <UserProfileView />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/user-profile" element={<ProtectedRoute><UserProfileView /></ProtectedRoute>} />
+              <Route path="/teams" element={<TeamView />} />
+              <Route path="/players" element={<PlayerView />} />
+              <Route path="/tournaments" element={<TournamentView />} />
+              <Route path="/matches" element={<MatchView />} />
+              <Route path="/schedule" element={<ScheduleView />} />
+              <Route path="/standings" element={<StandingsView />} />
+
+              {/* Admin Routes */}
+              <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboardView /></ProtectedRoute>} />
+              <Route path="/admin/teams" element={<ProtectedRoute><AdminTeamsView /></ProtectedRoute>} />
+              <Route path="/admin/players" element={<ProtectedRoute><AdminPlayersView /></ProtectedRoute>} />
+              <Route path="/admin/tournaments" element={<ProtectedRoute><AdminTournamentsView /></ProtectedRoute>} />
+              <Route path="/admin/matches" element={<ProtectedRoute><AdminMatchesView /></ProtectedRoute>} />
             </Routes>
           </main>
         </UserContext.Provider>

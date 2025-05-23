@@ -1,5 +1,7 @@
-# Final Capstone
-​
-This directory contains all of the starter projects for the final capstone.
-​
-Each project contains instructions that provides information about the starting code and explains how to get started with the final capstone project.
+# Liga Columbus
+
+This directory contains the full-stack web application for the **Liga Columbus** tournament management platform.
+
+The project includes the Java 21 + Spring Boot backend and React frontend. It provides tools for managing soccer tournaments hosted in Columbus, supporting both indoor and outdoor seasons.
+
+You'll find step-by-step instructions and starter code for launching the application locally, including user authentication, database setup, and frontend integration.

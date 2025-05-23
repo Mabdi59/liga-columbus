@@ -1,34 +1,31 @@
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useContext } from 'react';
 import { UserContext } from '../../context/UserContext';
+import styles from './MainNav.module.css';
 
 export default function MainNav() {
   const user = useContext(UserContext);
 
   return (
-    <nav id="main-nav" className="nav-list">
-      <div className="nav-link">
-        <NavLink to="/">Home</NavLink>
-      </div>
+    <nav className={styles.nav}>
+      <NavLink to="/" className={styles.link}>Home</NavLink>
+      <NavLink to="/teams" className={styles.link}>Teams</NavLink>
+      <NavLink to="/schedule" className={styles.link}>Schedule</NavLink>
+      <NavLink to="/standings" className={styles.link}>Standings</NavLink>
+
       {user ? (
         <>
-          <div className="nav-link">
-            <NavLink to="/userProfile">
-              Profile
-            </NavLink>
-          </div>
-          <div className="nav-link">
-            <Link to="/logout">
-              Logout
-            </Link>
-          </div>
+          <NavLink to="/user-profile" className={styles.link}>Profile</NavLink>
+          {user.authorities?.some(a => a.name === 'ROLE_ADMIN') && (
+            <NavLink to="/admin/dashboard" className={styles.link}>Admin</NavLink>
+          )}
+          <Link to="/logout" className={styles.link}>Logout</Link>
         </>
       ) : (
-        <div className="nav-link">
-          <NavLink to="/login">
-            Login
-          </NavLink>
-        </div>
+        <>
+          <NavLink to="/login" className={styles.link}>Login</NavLink>
+          <NavLink to="/register" className={styles.link}>Register</NavLink>
+        </>
       )}
     </nav>
   );
